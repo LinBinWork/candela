@@ -77,7 +77,7 @@ public class CreateRenewal extends weaver.interfaces.schedule.BaseCronJob {
 				+ " educationlevel,companystartdate,workyear,enddate,joblevel from "
 				+ " hrmresource a"
 				+ " where a.status = 1 "
-				+ " and a.enddate = convert(char(100),dateadd(day,90,GETDATE()),23)";
+				+ " and a.enddate = convert(char(100),dateadd(day,60,GETDATE()),23)";
 
 		rs.execute(sql);
 

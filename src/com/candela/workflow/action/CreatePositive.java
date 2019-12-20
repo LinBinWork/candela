@@ -58,7 +58,7 @@ public class CreatePositive extends  weaver.interfaces.schedule.BaseCronJob {
 			
 			
 			
-		    String format = "yyyyMMdd ";
+		    String format = "yyyyMMdd";
 			
 		    //String requestId = request.getRequestid();
 		    
@@ -85,7 +85,7 @@ public class CreatePositive extends  weaver.interfaces.schedule.BaseCronJob {
 	    		+" locationid,startdate,probationenddate,workcode,managera,managerb,managerc,joblevel,educationlevel,jobtitle, b.tlevel tlevel  "
  +" from hrmresource a  left join HrmDepartment b on a.departmentid = b.id   where a.status =0  "
 
-+"  and a.probationenddate = convert(char(100),dateadd(day,10,GETDATE()),23) ";
++"  and a.probationenddate = convert(char(100),dateadd(day,10,GETDATE()),23) and a.id not in (select sqr from formtable_main_72)";
 	  
         
 	    rs.execute(sql);
