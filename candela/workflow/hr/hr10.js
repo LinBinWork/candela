@@ -12,6 +12,7 @@ jQuery(document).ready(function() {
     mid.push(WfForm.convertFieldNameToId("rzrq")) ;
     mid.push(WfForm.convertFieldNameToId("szgw")) ;
     mid.push(WfForm.convertFieldNameToId("bt")) ;
+    mid.push(WfForm.convertFieldNameToId("ejbm")) ;
 
     console.log(mid);
 
@@ -27,6 +28,15 @@ jQuery(document).ready(function() {
         var rzrq = WfForm.getFieldValue(mid[1]);
         var bt = "HR10-录用流程-"+xm+"-"+rzrq+"-"+value;
         WfForm.changeFieldValue(mid[3], {value:bt});
+    });
+
+    WfForm.bindFieldChangeEvent(mid[4], function(obj,id,value){
+        if(value==60){
+            jQuery("#zdjs").show();
+        }
+        else{
+            jQuery("#zdjs").hide();
+        }
     });
 
 

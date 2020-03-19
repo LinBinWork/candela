@@ -16,7 +16,7 @@
     String off  = "";
     String sql ="";
 
-    if("0".equals(choice)){
+    if("0".equals(choice) || "4".equals(choice)){
         if(day1.equals(day2)){
             sql = "select signtime from HrmScheduleSign " +
                     "where  signtime > '06:30:00' and userid = "+userid+" and signdate = '"+day1+"' order by signtime asc";
