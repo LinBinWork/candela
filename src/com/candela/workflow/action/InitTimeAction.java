@@ -98,7 +98,7 @@ public class InitTimeAction extends BaseBean implements Action {
                break;
        }
        //更新职级
-       sql = "update hrmresource set seclevel = "+seclevel+" ,companystartdate =  "+rzrq+" where id = "+id;
+       sql = "update hrmresource set seclevel = "+seclevel+" ,companystartdate =  '"+rzrq+"' where id = "+id;
        rs.execute(sql);
         log.info("sql:>>>>>>>>>>>"+sql);
 

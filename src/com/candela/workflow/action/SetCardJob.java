@@ -1,6 +1,5 @@
 package com.candela.workflow.action;
 
-import com.candela.workflow.bean.Person;
 import com.candela.workflow.bean.Sign;
 import com.candela.workflow.bean.Time;
 import com.candela.workflow.util.DateUtils;
@@ -11,7 +10,6 @@ import weaver.interfaces.schedule.BaseCronJob;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
