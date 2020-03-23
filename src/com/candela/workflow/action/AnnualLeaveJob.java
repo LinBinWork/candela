@@ -1,19 +1,12 @@
 package com.candela.workflow.action;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.temporal.TemporalUnit;
+import java.util.Calendar;
 
-import com.candela.workflow.bean.PersonVocation;
-import com.candela.workflow.bean.Vocation;
-import com.candela.workflow.bean.YearVocation;
 import com.candela.workflow.service.VocationService;
-import com.candela.workflow.service.YearVocationService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import weaver.conn.RecordSet;
+import weaver.common.DateUtil;
 import weaver.interfaces.schedule.BaseCronJob;
 
 public class AnnualLeaveJob  extends  BaseCronJob {
@@ -21,6 +14,13 @@ public class AnnualLeaveJob  extends  BaseCronJob {
 	public void execute() {
 		VocationService vocationService = new VocationService();
 		vocationService.execute();
+
+		String firstDayOfYear = DateUtil.getFirstDayOfYear();
+		String lastDayOfYear = DateUtil.getLastDayOfYear();
+		int compDate = DateUtil.compDate(firstDayOfYear, lastDayOfYear);
+		String addDate = DateUtil.addDate(firstDayOfYear, 6);
+		Calendar calendar = DateUtil.getCalendar();
+		LocalDate localDate = LocalDate.of(1994, 11, 02);
 
 	}
 

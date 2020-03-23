@@ -1,96 +1,90 @@
 package com.candela.workflow.service;
 
-import com.candela.workflow.bean.HrmDepartment;
-import com.weaver.general.Util;
+import com.candela.workflow.bean.Department;
+import com.candela.workflow.bean.HrmResource;
 import weaver.conn.RecordSet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DepartmentService {
-
-    private List<HrmDepartment> list = new ArrayList<>();
-
-    private RecordSet p_rs = new RecordSet();
-    private RecordSet c_rs = new RecordSet();
-
-    private String p_sql = "";
-    private String c_sql = "";
-
-
-    public List<HrmDepartment> getList(){
-        p_sql = "select id,departmentid from hrmresource ";
-        p_rs.executeQuery(p_sql);
-        while(p_rs.next()){
-            HrmDepartment hrmDepartment = new HrmDepartment();
-            hrmDepartment.setPersonId(p_rs.getInt(1));
-            hrmDepartment.setDepartmentId(p_rs.getInt(2));
-            list.add(hrmDepartment);
-        }
-
-       for(int i =0 ;i<list.size();i++){
-           p_sql = "select tlevel,id from hrmdepartment where id = ?";
-           p_rs.executeQuery(p_sql,list.get(i).getDepartmentId());
-           p_rs.next();
-           Map<Integer, Integer> dept = handleDept(p_rs.getInt(1), p_rs.getInt(2));
-
-           if(dept.containsKey(1)){
-               list.get(i).setDepartmentA(dept.get(1));
+    private String sql  = "";
+    private RecordSet rs = new RecordSet();
+    public Map<Integer,Department> getDepartments(){
+        Map<Integer,Department> departments= new HashMap<>();
+       sql = "select id,departmentname,supdepid,tlevel from HrmDepartment";
+       rs.executeQuery(sql);
+       while(rs.next()){
+           Department department = new Department();
+           department.setId(rs.getInt(1));
+           department.setDepartmentName(rs.getString(2));
+           department.setParentId(rs.getInt(3));
+           department.setLevel(rs.getInt(4));
+           if(department.getLevel()==2){
+               department.setHasParent(false);
            }
-           if(dept.containsKey(2)){
-               list.get(i).setDepartmentB(dept.get(2));
+           else {
+               department.setHasParent(true);
            }
-           if(dept.containsKey(3)){
-               list.get(i).setDepartmentC(dept.get(3));
+           if(department.getLevel()==4){
+               department.setHasSon(false);
            }
+           else{
+               department.setHasSon(true);
+           }
+           departments.put(department.getId(),department);
 
        }
-       return list;
-
+       return  departments;
     }
-    public void execute(List<HrmDepartment> list){
-        for(HrmDepartment hrm : list){
-            p_sql = "update hrmresource  set departmentA = ? where id = ?" ;
-            p_rs.executeUpdate(p_sql,hrm.getDepartmentA(),hrm.getPersonId());
-            if(hrm.getDepartmentB() != null){
-                p_sql = "update hrmresource  set departmentB = ? where id = ?" ;
-                p_rs.executeUpdate(p_sql,hrm.getDepartmentB(),hrm.getPersonId());
+    public List<HrmResource> getResource(Map<Integer,Department> map){
+        sql = "select id,lastname,locationid,departmentid,joblevel,seclevel,managerid from hrmresource where status <> 5 ";
+        rs.executeQuery(sql);
+        List<HrmResource> list = new ArrayList<>();
+        while(rs.next()){
+            HrmResource resource = new HrmResource();
+            Map<Integer,Department> depts = new HashMap<>();
+            resource.setId(rs.getInt(1));
+            resource.setLastname(rs.getString(2));
+            resource.setLocation(rs.getInt(3));
+            resource.setDepartmentid(rs.getInt(4));
+            resource.setJoblevel(rs.getInt(5));
+            resource.setSeclevel(rs.getInt(6));
+            resource.setManagerid(rs.getInt(7));
+
+            //
+            Department department = map.get(resource.getDepartmentid());
+            depts.put(department.getLevel()-1,department);
+
+            if(department.isHasParent()){
+                Department department1 = map.get(department.getParentId());
+                depts.put(department1.getLevel()-1,department1);
+                if(department1.isHasParent()){
+                    Department department2 = map.get(department1.getParentId());
+                    depts.put(department2.getLevel()-1,department2);
+                }
             }
-            if(hrm.getDepartmentC() != null){
-                p_sql = "update hrmresource  set departmentC = ? where id = ?" ;
-                p_rs.executeUpdate(p_sql,hrm.getDepartmentC(),hrm.getPersonId());
-            }
 
+           resource.setMap(depts);
+            list.add(resource);
         }
+        return list;
 
     }
-    public Map<Integer,Integer> handleDept(int tlevel,int deptid){
-        Map<Integer, Integer> map = new HashMap<>();
-       if(tlevel==2){
-           map.put(1,deptid);
-       }
-       if(tlevel==3){
-           map.put(2,deptid);
-           p_sql = "select supdepid from hrmdepartment where id = ?";
-           c_rs.executeQuery(p_sql,deptid);
-           c_rs.next();
-           map.put(1,c_rs.getInt(1));
-
-       }
-       if(tlevel==4){
-           map.put(3,deptid);
-           p_sql = "select supdepid from hrmdepartment where id = ?";
-           c_rs.executeQuery(p_sql,deptid);
-           c_rs.next();
-           map.put(2,c_rs.getInt(1));
-           p_sql = "select supdepid from hrmdepartment where id = ?";
-           c_rs.executeQuery(p_sql,map.get(2));
-           c_rs.next();
-           map.put(1,c_rs.getInt(1));
-
-       }
-       return  map;
+    public void execute(List<HrmResource> list){
+        for (HrmResource hr :list){
+            if(hr.getMap().get(1) != null){
+                sql = "update hrmresource set departmentA = ? where id = ?";
+                rs.executeUpdate(sql,hr.getMap().get(1).getId(),hr.getId());
+            }
+            if(hr.getMap().get(2) != null){
+                sql = "update hrmresource set departmentB = ? where id = ?";
+                rs.executeUpdate(sql,hr.getMap().get(2).getId(),hr.getId());
+            }
+            if(hr.getMap().get(3) != null){
+                sql = "update hrmresource set departmentC = ? where id = ?";
+                rs.executeUpdate(sql,hr.getMap().get(3).getId(),hr.getId());
+            }
+        }
     }
+
 }

@@ -13,6 +13,15 @@ public class Vocation {
     private String workday;
     private int status;
     private int round;
+    private String expiredDate;
+
+    public String getExpiredDate() {
+        return expiredDate;
+    }
+
+    public void setExpiredDate(String expiredDate) {
+        this.expiredDate = expiredDate;
+    }
 
     public String getWorkday() {
         return workday;

@@ -51,7 +51,7 @@ public class OverTimeDetailAction extends BaseBean implements Action {
 
 
         //取主表数据
-        Property[] properties = requestinfo.getMainTableInfo().getProperty();
+        Property[] properties = requestinfo.getMainTableInfo().getProperty(); //取主表数据
         DetailTableInfo detail = requestinfo.getDetailTableInfo();//所有明细表
         Map<String,String> map = this.getPropertyMap(properties);
         int sqr = Integer.parseInt(map.get("sqr"));
@@ -59,7 +59,6 @@ public class OverTimeDetailAction extends BaseBean implements Action {
         Row[] rows = d_table.getRow();
         Map<String, String> cellMap = null;
         for (Row row : rows) {
-            String[] s = new String[4];
             Cell[] cells = row.getCell();
             cellMap = this.getCellMap(cells);//明细每一列的值
 
@@ -67,6 +66,7 @@ public class OverTimeDetailAction extends BaseBean implements Action {
             double jbsc =  Double.parseDouble(Util.null2String(cellMap.get("jbsc")));//加班时长
             String year = jbrq.substring(0,4);
             String month = jbrq.substring(5,7);
+
             sql = "insert into kq_balanceofleave(leaveRulesId,resourceId,belongYear,extraAmount,status,belongMonth,overtimeType,effectiveDate,isDelete,expirationDate)"+
                     "values(?,?,?,?,?,?,?,?,?,?)";
             rs.executeUpdate(sql,5,sqr,year,jbsc,0,month,4,jbrq,0,"2500-12-31");
